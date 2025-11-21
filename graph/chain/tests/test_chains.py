@@ -3,7 +3,8 @@ from dotenv import load_dotenv
 from graph.chain.generation import generation_chain
 from graph.chain.hallucination_grader import (GradeHallucinations, hallucination_grader)
 from graph.chain.retrieval_grader import GradeDocuments, retrieval_grader
-# from graph.chain.router import RouteQuery, question_router
+from graph.chain.router import RouteQuery, question_router
+from graph.chain.router import RouteQuery
 from ingestion import retriever
 
 load_dotenv()
@@ -61,3 +62,16 @@ def test_hallucination_grader_answer_no() -> None:
         }
     )
     assert not res.binary_score
+
+def test_router_to_vectorstore() -> None:
+    question = "agent memory"
+
+    res: RouteQuery = question_router.invoke({"question": question})
+    assert res.datasource == "vectorstore"
+
+
+def test_router_to_websearch() -> None:
+    question = "how to make pizza"
+
+    res: RouteQuery = question_router.invoke({"question": question})
+    assert res.datasource == "websearch"
